@@ -56,29 +56,18 @@
             <!-- Account -->
 
             <div class="card-body">
-                <form method="POST" enctype="multipart/form-data" action="{{url('store-department')}}">
-
+                <form method="POST" enctype="multipart/form-data" action="{{ route('store-department') }}">
                     @csrf
                     <div class="row">
-
                         <div class="mb-3 col-md-6">
                             <label for="xad_id" class="form-label">Name</label>
-                            <input class="form-control" type="text" id="name" name="name" value="" autofocus />
-                        </div>
-
-                        <div class="mb-3 col-md-6">
-                            <label for="nationality" class="form-label">Nationality</label>
-                            <input type="text" class="form-control" id="nationality" name="nationality" placeholder="pakistan" maxlength="6" />
+                            <input class="form-control" type="text" id="name" name="name" placeholder="please add department name ..." autofocus />
                         </div>
                     </div>
-
-
+                
                     <div class="mt-2">
                         <button type="submit" class="btn btn-primary me-2">Submit</button>
-                        <input type="hidden" name="profile_image" id="profileImage">
-                        <!-- <button type="reset" class="btn btn-outline-secondary">Cancel</button> -->
                     </div>
-
                 </form>
             </div>
             <!-- /Account -->
@@ -87,26 +76,6 @@
     </div>
 </div>
 
-<script>
-    //hide alert 
-    function hideAlertAfterDelay(alertId, delay) {
-        console.log('Trying to hide', alertId);
-        var alertElement = document.getElementById(alertId);
-        if (alertElement) {
-            setTimeout(function() {
-                console.log('Hiding', alertId);
-                alertElement.style.opacity = 0; // Fade out effect
-                setTimeout(function() {
-                    alertElement.style.display = 'none'; // Hide element after fading out
-                }, 500); // Match the duration of the fade-out effect
-            }, delay);
-        } else {
-            console.log('Element not found:', alertId);
-        }
-    }
 
-    // Hide alerts after 3000 ms
-    hideAlertAfterDelay('error-alert', 3000);
-    hideAlertAfterDelay('success-alert', 3000);
-</script>
+
 @endsection

@@ -20,24 +20,6 @@ class Department extends Model
     protected $table = 'departments';
 
     /**
-     * Relationship with Subcategories.
-     * A department has many subcategories.
-     */
-    public function subcategories()
-    {
-        return $this->hasMany(Subcategory::class);
-    }
-
-    /**
-     * Relationship with Categories.
-     * A department has many categories.
-     */
-    public function categories()
-    {
-        return $this->hasMany(Category::class);
-    }
-
-    /**
      * Relationship with Documents.
      * A department has many documents.
      */

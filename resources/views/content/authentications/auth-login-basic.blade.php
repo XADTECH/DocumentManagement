@@ -1,82 +1,133 @@
 @extends('layouts/blankLayout')
 
-@section('title', 'Login Basic - Pages')
+@section('title', 'Login - Document Management System')
 
 @section('page-style')
 <!-- Page -->
-<link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-auth.css')}}">
+<link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}">
+<style>
+  .authentication-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: #005693;
+    color: #fff;
+  }
+  .authentication-inner {
+    max-width: 900px;
+    margin: auto;
+    display: flex;
+    background: #ffffff;
+    box-shadow: 0px 6px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .auth-image-section {
+    width: 50%;
+    background: url('{{ asset('assets/img/dms/dms-image.jpg') }}') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .auth-image-section img {
+    max-width: 100%;
+    max-height: 80%;
+    object-fit: contain;
+  }
+  .auth-form-section {
+    width: 50%;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .card-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .app-brand img {
+    height: 70px;
+  }
+  .btn-primary {
+    background-color: #0067aa;
+    border-color: #0067aa;
+    border-radius: 6px;
+  }
+  .btn-primary:hover {
+    background-color: #004c80;
+    border-color: #004c80;
+  }
+  .form-control {
+    border-radius: 6px;
+  }
+  .text-muted {
+    font-size: 0.9rem;
+  }
+</style>
 @endsection
-
 
 @section('content')
 <div class="container-xxl">
-  <div class="authentication-wrapper authentication-basic container-p-y">
+  <div class="authentication-wrapper">
     <div class="authentication-inner">
-    @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-      <!-- Register -->
-      <div class="card">
-        <div class="card-body">
-          <!-- Logo -->
+      <!-- Left Section for Form -->
+      <div class="auth-form-section">
+        <div class="card-header">
           <div class="app-brand justify-content-center">
-            <a href="{{url('/')}}" class="app-brand-link gap-2">
-            <img src="{{asset('assets/img/xad/xad.jfif')}}" class="img-fluid" alt="Layout without navbar" style="height:80px; ">
+            <a href="{{ url('/') }}" class="app-brand-link">
+              <img src="{{ asset('assets/img/xad/xad.jfif') }}" alt="Document Management System">
             </a>
           </div>
-          <!-- /Logo -->
-          <h4 class="mb-2 text-center">Budget & Fund Management</h4>
-          <p class="mb-4 text-center">Please sign-in to your account and start the Financial Management</p>
+          <h4 class="mt-3">Welcome Back!</h4>
+          <p class="mb-0 text-muted">Access your documents and manage efficiently</p>
+        </div>
+        <div class="card-body">
+          @if (session('success'))
+            <div class="alert alert-success">
+              {{ session('success') }}
+            </div>
+          @endif
+          @if (session('error'))
+            <div class="alert alert-danger">
+              {{ session('error') }}
+            </div>
+          @endif
 
-          <form id="formAuthentication" class="mb-3" action="{{ url('/login-user') }}" method="POST">
-          @csrf
-            <div class="mb-3">
+          <form id="formAuthentication" action="{{ url('/login-user') }}" method="POST">
+            @csrf
+            <div class="mb-4">
               <label for="email" class="form-label">Email or Username</label>
-              <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email or username" autofocus>
+              <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email or username" autofocus required>
             </div>
-            <div class="mb-3 form-password-toggle">
-              <div class="d-flex justify-content-between">
-                <label class="form-label" for="password">Password</label>
-                <a href="{{url('auth/forgot-password-basic')}}">
-                  <small>Forgot Password?</small>
-                </a>
-              </div>
-              <div class="input-group input-group-merge">
-                <input type="password" id="password" class="form-control" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
-                <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
-              </div>
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" id="password" class="form-control" name="password" placeholder="Enter your password" required>
             </div>
-            <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-4">
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="remember-me">
                 <label class="form-check-label" for="remember-me">
                   Remember Me
                 </label>
               </div>
+              <a href="{{ url('auth/forgot-password-basic') }}" class="text-muted">Forgot Password?</a>
             </div>
-            <div class="mb-3">
-            <button type="submit" class="btn btn-primary d-grid w-100">Sign in</button>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Sign In</button>
             </div>
           </form>
-          <p class="text-center">
-            <span>©</span>
-            <a href="{{url('auth/register-basic')}}">
-              <span>Developed By XAD Technology</span>
-            </a>
+
+          <p class="text-center mt-4">
+            <small>Powered by</small>
+            <a href="{{ url('/') }}" class="text-primary">XAD Technology</a>
           </p>
         </div>
       </div>
+      <!-- Right Section for Image -->
+      <div class="auth-image-section" style="display: flex; align-items:center; justify-content:center; padding:20px">
+        <img src="{{ asset('assets/img/dms/cartoon-girl-desk.jpg') }}" alt="Cartoon Girl Sitting on Desk">
+      </div>
     </div>
-    <!-- /Register -->
   </div>
-</div>
 </div>
 @endsection

@@ -4,6 +4,47 @@
         <div>Dashboard</div>
     </a>
 </li>
+
+<li
+    class="menu-item {{ request()->is('departments') || request()->is('departments') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-user"></i>
+        <div>Department Management</div>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item {{ request()->is('departments') ? 'active' : '' }}">
+            <a href="/departments" class="menu-link">
+                <div>Deparment List</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('add-department') ? 'active' : '' }}">
+            <a href="/add-departments" class="menu-link">
+                <div>Add Deparment</div>
+            </a>
+        </li>
+    </ul>
+</li>
+
+<li
+    class="menu-item {{ request()->is('subcategories') || request()->is('add-subcategories') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-category"></i>
+        <div>Subcategory Management</div>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item {{ request()->is('subcategories') ? 'active' : '' }}">
+            <a href="/subcategories" class="menu-link">
+                <div>Subcategory List</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('add-subcategory') ? 'active' : '' }}">
+            <a href="/add-subcategory" class="menu-link">
+                <div>Add Subcategory</div>
+            </a>
+        </li>
+    </ul>
+</li>
+
 <li class="menu-item {{ request()->is('upload-document') ? 'active' : '' }}">
     <a href="/upload-document" class="menu-link">
         <i class="menu-icon tf-icons bx bx-file"></i>
@@ -25,26 +66,7 @@
 </li>
 
 
-<!-- User Management -->
-<li
-    class="menu-item {{ request()->is('departments') || request()->is('departments') ? 'active open' : '' }}">
-    <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons bx bx-user"></i>
-        <div>Department Management</div>
-    </a>
-    <ul class="menu-sub">
-        <li class="menu-item {{ request()->is('departments') ? 'active' : '' }}">
-            <a href="/departments" class="menu-link">
-                <div>Deparment List</div>
-            </a>
-        </li>
-        <li class="menu-item {{ request()->is('add-department') ? 'active' : '' }}">
-            <a href="/add-departments" class="menu-link">
-                <div>Add Deparment</div>
-            </a>
-        </li>
-    </ul>
-</li>
+
 <!-- User Management -->
 <li
     class="menu-item {{ request()->is('/users') || request()->is('/add-user') ? 'active open' : '' }}">
