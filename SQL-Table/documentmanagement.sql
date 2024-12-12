@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 05, 2024 at 09:22 AM
+-- Generation Time: Dec 12, 2024 at 09:09 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -63,6 +63,14 @@ CREATE TABLE `departments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `departments`
+--
+
+INSERT INTO `departments` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(2, 'Account Department', '2024-12-12 04:16:06', '2024-12-12 04:32:22'),
+(4, 'HR Department', '2024-12-12 04:32:09', '2024-12-12 04:32:09');
 
 -- --------------------------------------------------------
 
@@ -129,7 +137,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (10, '2024_12_02_114524_create_approvals_table', 2),
 (11, '2024_12_02_114607_create_documents_table', 2),
 (12, '2024_12_05_082508_create_categories_table', 2),
-(13, '2024_12_05_090546_create_subcategories_table', 2);
+(13, '2024_12_05_090546_create_subcategories_table', 2),
+(14, '2024_12_04_090546_create_subcategories_table', 3),
+(15, '2024_12_04_090548_create_subcategories_table', 4);
 
 -- --------------------------------------------------------
 
@@ -187,6 +197,14 @@ CREATE TABLE `subcategories` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `subcategories`
+--
+
+INSERT INTO `subcategories` (`id`, `name`, `department_id`, `created_at`, `updated_at`) VALUES
+(1, 'Cashier', 2, '2024-12-12 04:59:30', '2024-12-12 04:59:30'),
+(3, 'Invoice', 4, '2024-12-12 05:06:24', '2024-12-12 05:06:24');
 
 -- --------------------------------------------------------
 
@@ -319,7 +337,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `documents`
@@ -337,7 +355,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -349,7 +367,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `subcategories`
 --
 ALTER TABLE `subcategories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
