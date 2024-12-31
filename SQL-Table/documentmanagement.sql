@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 12, 2024 at 09:09 AM
+-- Generation Time: Dec 31, 2024 at 12:52 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -70,7 +70,16 @@ CREATE TABLE `departments` (
 
 INSERT INTO `departments` (`id`, `name`, `created_at`, `updated_at`) VALUES
 (2, 'Account Department', '2024-12-12 04:16:06', '2024-12-12 04:32:22'),
-(4, 'HR Department', '2024-12-12 04:32:09', '2024-12-12 04:32:09');
+(4, 'HR Department', '2024-12-12 04:32:09', '2024-12-12 04:32:09'),
+(5, 'Project Management', '2024-12-30 13:36:09', '2024-12-30 13:36:09'),
+(6, 'Fleet Management', '2024-12-30 13:39:29', '2024-12-30 13:39:29'),
+(7, 'Training and Development', '2024-12-30 13:42:24', '2024-12-30 13:42:24'),
+(8, 'Finance & Accounts', '2024-12-30 13:45:13', '2024-12-30 13:45:13'),
+(9, 'Cash & LPO', '2024-12-30 13:51:30', '2024-12-30 13:51:30'),
+(10, 'Contract Department', '2024-12-30 13:57:28', '2024-12-30 13:57:28'),
+(11, 'Admin Department', '2024-12-30 14:01:56', '2024-12-30 14:01:56'),
+(12, 'CEO', '2024-12-30 14:04:29', '2024-12-30 14:04:29'),
+(13, 'Secretary', '2024-12-31 04:15:34', '2024-12-31 04:15:34');
 
 -- --------------------------------------------------------
 
@@ -91,6 +100,31 @@ CREATE TABLE `documents` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `document_types`
+--
+
+CREATE TABLE `document_types` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `department_id` bigint UNSIGNED NOT NULL,
+  `subcategory_id` bigint UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `document_types`
+--
+
+INSERT INTO `document_types` (`id`, `name`, `department_id`, `subcategory_id`, `created_at`, `updated_at`) VALUES
+(1, 'Invoice', 2, 1, '2024-12-30 08:25:17', '2024-12-30 08:25:17'),
+(2, 'Receipts', 2, 1, '2024-12-30 08:31:30', '2024-12-30 08:31:30'),
+(3, 'Vouchers', 2, 1, '2024-12-30 08:33:26', '2024-12-30 08:33:26'),
+(6, 'Notes', 2, 1, '2024-12-30 13:31:40', '2024-12-30 13:32:48');
 
 -- --------------------------------------------------------
 
@@ -139,7 +173,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (12, '2024_12_05_082508_create_categories_table', 2),
 (13, '2024_12_05_090546_create_subcategories_table', 2),
 (14, '2024_12_04_090546_create_subcategories_table', 3),
-(15, '2024_12_04_090548_create_subcategories_table', 4);
+(15, '2024_12_04_090548_create_subcategories_table', 4),
+(16, '2024_12_30_113525_create_document_types_table', 5),
+(17, '2024_12_30_113526_create_document_types_table', 6);
 
 -- --------------------------------------------------------
 
@@ -203,8 +239,7 @@ CREATE TABLE `subcategories` (
 --
 
 INSERT INTO `subcategories` (`id`, `name`, `department_id`, `created_at`, `updated_at`) VALUES
-(1, 'Cashier', 2, '2024-12-12 04:59:30', '2024-12-12 04:59:30'),
-(3, 'Invoice', 4, '2024-12-12 05:06:24', '2024-12-12 05:06:24');
+(1, 'Cashier', 2, '2024-12-12 04:59:30', '2024-12-12 04:59:30');
 
 -- --------------------------------------------------------
 
@@ -234,15 +269,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `xad_id`, `first_name`, `last_name`, `email`, `nationality`, `organization_unit`, `phone_number`, `password`, `role`, `permissions`, `profile_image`, `created_at`, `updated_at`) VALUES
-(19, NULL, 'nabeel', 'javed', 'nabeeljaved2029@gmail.com', 'pak', 'Project Manager', '0521077862', '$2y$12$EHZmQeCwCQ8wmA5H53V1suAans/2WT0qtykRfvx4WzxgUf411dJKG', 'Project Manager', '\"[\\\"Project Management\\\"]\"', '172499948757.jfif', '2024-08-29 05:51:09', '2024-08-29 05:51:09'),
 (33, NULL, 'xad', 'tech', 'admin@xadtech.com', 'pak', 'admin', '0521077862', '$2y$12$WHWpYX5rpA3oSZYQYx.T6emR.1A.C2XfICThPWxCEvzfSistqapBW', 'Admin', '\"[\\\"Project Management\\\",\\\"Cash Flow Management\\\",\\\"Bank Management\\\",\\\"User Management\\\"]\"', '172499948757.jfif', '2024-08-30 02:31:28', '2024-08-30 02:31:28'),
-(35, NULL, 'shahbaz', 'anjum', 'shahbaz@xadtech.com', NULL, 'admin', '0521077862', '$2y$10$wGzRSPSOc5KHdFrp33E0vuJl.WbHLREtMESmiHCg25jWJrIirMble', 'Finance Manager', '\"[\\\"Project Management\\\",\\\"Cash Flow Management\\\"]\"', '172499948757.jfif', '2024-08-30 02:36:34', '2024-10-09 01:41:49'),
-(36, NULL, 'ahmed', 'shabbir', 'ahmed@xadtech.com', 'pak', 'Project Manager', '050521077862', '$2y$12$ZvcN2OHAhSUNjwe5uR0EGOw55Ix/94w5NwoRWhYprySNy4MRVhAU2', 'Project Manager', '\"[\\\"Project Management\\\"]\"', '', '2024-09-16 04:47:51', '2024-09-16 04:47:51'),
-(37, NULL, 'Majid', 'aslam', 'majid@xadtech.com', 'Pak', 'Logistics', '050 050 050 050', '$2y$12$3N4uydfegGQhZLgrtxOD3eaZ.OSpvyF5obRo2yPWdeuITnsfeH3M.', 'Project Manager', '\"[\\\"Project Management\\\"]\"', '', '2024-10-01 02:29:20', '2024-10-02 02:07:13'),
-(38, NULL, 'khalid', 'omar', 'ceo@xadtech.com', 'Pak', 'CEO', '0547014800', '$2y$10$Pm/cRim769BlglRAxuMNyOwfRzNyI7iLXIScPzD5QFSAjlJb2TWBq', 'Admin', NULL, '', '2024-10-09 01:54:19', '2024-10-09 02:54:58'),
-(39, 'Xad-222', 'Asad', 'Khan', 'asad@gmail.com', 'test', 'Test', '033620233', '$2y$12$Q4s4fQip95EMM19Q6C9LMuNh/drf3E/laJYU8AEgfEbyXsJhvT/NW', 'Finance Manager', '\"[\\\"Project Management\\\"]\"', '', '2024-11-24 14:52:56', '2024-11-24 14:52:56'),
-(40, '3244', 'test', 'test', 'test2@gmail.com', 'test', 'test', '332423423432', '$2y$12$ce85SNEnprfb1FNuHTNJG.50zbT4y2RkxlcSwleVL0TtdCerOEOva', 'Logistics', '\"[\\\"Bank Management\\\"]\"', '', '2024-11-26 05:25:09', '2024-11-26 05:25:09'),
-(41, 'admin@xadtech.com', 'Muhammad Asad', 'Khan', 'asadkhan222@gmail.com', 'test', 'test', '03362016042', '$2y$12$HDrumXVvKXm1j.7LqDaikunZ9LzxQGVJtUQScnAWwH7Q.yNaAEfSS', 'Admin', '\"[\\\"Project Management\\\",\\\"Bank Management\\\"]\"', '', '2024-12-02 05:22:11', '2024-12-02 05:22:11');
+(43, 'PT-356', 'sahar', 'sahar', 'secretary@xadtech.com', 'PK', 'Secretary', '123456789', '$2y$10$GmF/rniXKRfoIfp.39.H..Zr9uR9AOxshd0Q2pgwYzBTt1Ubb2GbS', 'Secretary', NULL, '173563596893.jpg', '2024-12-31 05:06:08', '2024-12-31 07:51:40');
 
 --
 -- Indexes for dumped tables
@@ -271,6 +299,15 @@ ALTER TABLE `departments`
 --
 ALTER TABLE `documents`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `document_types`
+--
+ALTER TABLE `document_types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `document_types_name_unique` (`name`),
+  ADD KEY `document_types_department_id_foreign` (`department_id`),
+  ADD KEY `document_types_subcategory_id_foreign` (`subcategory_id`);
 
 --
 -- Indexes for table `failed_jobs`
@@ -337,13 +374,19 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `documents`
 --
 ALTER TABLE `documents`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `document_types`
+--
+ALTER TABLE `document_types`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -355,7 +398,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -373,7 +416,18 @@ ALTER TABLE `subcategories`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `document_types`
+--
+ALTER TABLE `document_types`
+  ADD CONSTRAINT `document_types_department_id_foreign` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `document_types_subcategory_id_foreign` FOREIGN KEY (`subcategory_id`) REFERENCES `subcategories` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

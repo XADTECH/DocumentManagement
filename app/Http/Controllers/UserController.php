@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Department;
+
 use Illuminate\Support\Facades\Hash;
 use Phpass\PasswordHash;
 
@@ -12,11 +14,13 @@ class UserController extends Controller
 {
   public function index()
   {
-    return view('content.pages.pages-add-user-account');
+    $departments = Department::all();
+    return view('content.pages.pages-add-user-account', compact('departments'));
   }
   public function usersList()
   {
-    return view('content.pages.pages-users-list');
+    $departments = Department::all();
+    return view('content.pages.pages-users-list', compact('departments'));
   }
 
   // Store a newly created resource in storage

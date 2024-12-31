@@ -120,11 +120,12 @@
               <label for="address" class="form-label">Address</label>
               <input type="text" class="form-control" id="address" name="address" placeholder="Address" />
             </div>
+           
             <div class="mb-3 col-md-6">
               <label for="address" class="form-label">Role</label>
               <select name="role" class="form-control" required>
-                @foreach(App\Models\User::roles() as $role)
-                <option value="{{ $role }}">{{ $role }}</option>
+                @foreach($departments as $department)
+                <option value="{{ $department->name}}">{{ $department->name }}</option>
                 @endforeach
               </select>
             </div>

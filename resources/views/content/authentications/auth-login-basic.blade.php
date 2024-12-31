@@ -9,7 +9,7 @@
   .authentication-wrapper {
     display: flex;
     min-height: 100vh;
-    background-color: #005693;
+    /* background-color: #005693; */
     color: #fff;
   }
   .authentication-inner {
@@ -78,7 +78,7 @@
               <img src="{{ asset('assets/img/xad/xad.jfif') }}" alt="Document Management System">
             </a>
           </div>
-          <h4 class="mt-3">Welcome Back!</h4>
+          <h4 class="mt-3">Document Management System</h4>
           <p class="mb-0 text-muted">Access your documents and manage efficiently</p>
         </div>
         <div class="card-body">
@@ -118,14 +118,13 @@
           </form>
 
           <p class="text-center mt-4">
-            <small>Powered by</small>
-            <a href="{{ url('/') }}" class="text-primary">XAD Technology</a>
+            <a href="{{ url('/') }}" class="text-primary">XAD TECHNOLOGY® 2025</a>
           </p>
         </div>
       </div>
       <!-- Right Section for Image -->
       <div class="auth-image-section" style="display: flex; align-items:center; justify-content:center; padding:20px">
-        <img src="{{ asset('assets/img/dms/cartoon-girl-desk.jpg') }}" alt="Cartoon Girl Sitting on Desk">
+        <img src="{{ asset('assets/img/xad/doc.png') }}" alt="Cartoon Girl Sitting on Desk">
       </div>
     </div>
   </div>

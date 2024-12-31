@@ -53,7 +53,7 @@
         <i class="fas fa-folder-open header-icon"></i>
         <h4 class="header-title mt-2">DOCUMENT MANAGEMENT</h4>
     </div>
-        <div class="folder-grid">
+        {{-- <div class="folder-grid">
             <!-- Full Department List with Icons -->
             @php
                 $departments = [
@@ -84,6 +84,27 @@
                         <i class="{{ $department['icon'] }}"></i>
                     </div>
                     <div class="folder-title">{{ $department['name'] }}</div>
+                </div>
+            @endforeach
+        </div> --}}
+
+        <div class="folder-grid">
+            @foreach ($departments as $department)
+                <div class="folder-card">
+                    <div class="folder-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <div class="folder-title">{{ $department->name }}</div>
+                    <!-- Display Documents -->
+                    @if ($department->documents->count())
+                        <ul class="document-list">
+                            @foreach ($department->documents as $document)
+                                <li>{{ $document->name }}</li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p>No documents available.</p>
+                    @endif
                 </div>
             @endforeach
         </div>

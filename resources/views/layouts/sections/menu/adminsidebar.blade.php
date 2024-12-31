@@ -45,6 +45,28 @@
     </ul>
 </li>
 
+<li
+    class="menu-item {{ request()->is('document-types') || request()->is('add-document-type') ? 'active open' : '' }}">
+    <a href="javascript:void(0);" class="menu-link menu-toggle">
+        <i class="menu-icon tf-icons bx bx-file"></i>
+        <div>Document Type Management</div>
+    </a>
+    <ul class="menu-sub">
+        <li class="menu-item {{ request()->is('document-types') ? 'active' : '' }}">
+            <a href="/document-types" class="menu-link">
+                <div>Document Type List</div>
+            </a>
+        </li>
+        <li class="menu-item {{ request()->is('document-types/add') ? 'active' : '' }}">
+            <a href="{{ route('document-types.create') }}" class="menu-link">
+                <div>Add Document Type</div>
+            </a>
+        </li>
+        
+    </ul>
+</li>
+
+
 <li class="menu-item {{ request()->is('upload-document') ? 'active' : '' }}">
     <a href="/upload-document" class="menu-link">
         <i class="menu-icon tf-icons bx bx-file"></i>

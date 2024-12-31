@@ -10,6 +10,7 @@ use App\Http\Controllers\authentications\ForgotPasswordBasic;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ImportExportController;
 use App\Http\Controllers\SubcategoryController;
+use App\Http\Controllers\DocumentTypeController; 
 
 // Main Page Route
 // Public route for the login page with middleware to redirect if authenticated
@@ -59,11 +60,20 @@ Route::middleware(['checklogin'])->group(function () {
     Route::post('update-department/{id}', [DepartmentController::class, 'update'])->name('update-department');
     Route::delete('delete-department/{id}', [DepartmentController::class, 'destroy'])->name('delete-department');
 
-
     Route::get('/subcategories', [SubcategoryController::class, 'index'])->name('subcategories.index');
-Route::get('/add-subcategory', [SubcategoryController::class, 'create'])->name('subcategories.create');
-Route::post('/store-subcategory', [SubcategoryController::class, 'store'])->name('subcategories.store');
-Route::get('/edit-subcategory/{id}', [SubcategoryController::class, 'edit'])->name('subcategories.edit');
-Route::post('/update-subcategory/{id}', [SubcategoryController::class, 'update'])->name('subcategories.update');
-Route::delete('/delete-subcategory/{id}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
+    Route::get('/add-subcategory', [SubcategoryController::class, 'create'])->name('subcategories.create');
+    Route::post('/store-subcategory', [SubcategoryController::class, 'store'])->name('subcategories.store');
+    Route::get('/edit-subcategory/{id}', [SubcategoryController::class, 'edit'])->name('subcategories.edit');
+    Route::post('/update-subcategory/{id}', [SubcategoryController::class, 'update'])->name('subcategories.update');
+    Route::delete('/delete-subcategory/{id}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
+
+    Route::prefix('document-types')->group(function () {
+        Route::get('/', [DocumentTypeController::class, 'index'])->name('document-types.index');
+        Route::get('/add', [DocumentTypeController::class, 'create'])->name('document-types.create');
+        Route::post('/store', [DocumentTypeController::class, 'store'])->name('document-types.store');
+        Route::get('/edit/{id}', [DocumentTypeController::class, 'edit'])->name('document-types.edit');
+        Route::put('/update/{id}', [DocumentTypeController::class, 'update'])->name('document-types.update');
+        Route::delete('/delete/{id}', [DocumentTypeController::class, 'destroy'])->name('document-types.destroy');
+    });
+    
 });
