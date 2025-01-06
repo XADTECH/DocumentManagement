@@ -27,4 +27,10 @@ class Department extends Model
     {
         return $this->hasMany(Document::class);
     }
+
+    public function subcategories()
+{
+    return $this->hasMany(Subcategory::class);
+}
+
 }

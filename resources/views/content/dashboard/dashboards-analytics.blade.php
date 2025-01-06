@@ -25,6 +25,8 @@
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
+            text-decoration: none;
+            color: inherit;
         }
 
         .folder-card:hover {
@@ -44,68 +46,48 @@
             color: #374151;
             font-weight: 600;
         }
+
+        .document-count {
+            font-size: 14px;
+            color: #007bff;
+            margin-top: 5px;
+        }
+
+        .no-documents {
+            font-size: 14px;
+            color: #6b7280;
+        }
     </style>
 @endsection
 
 @section('content')
     <div class="container mt-5">
-      <div class="header-with-icon text-center">
-        <i class="fas fa-folder-open header-icon"></i>
-        <h4 class="header-title mt-2">DOCUMENT MANAGEMENT</h4>
-    </div>
-        {{-- <div class="folder-grid">
-            <!-- Full Department List with Icons -->
-            @php
-                $departments = [
-                    ['name' => '1- CEO Approval Registry', 'icon' => 'fas fa-briefcase'],
-                    ['name' => '2- HR Appraisal', 'icon' => 'fas fa-users'],
-                    ['name' => '3- HR Department', 'icon' => 'fas fa-user-tie'],
-                    ['name' => '4- Admin Department', 'icon' => 'fas fa-cogs'],
-                    ['name' => '5- Cash & LPO Request', 'icon' => 'fas fa-money-check-alt'],
-                    ['name' => '6- Finance & Accounts Department', 'icon' => 'fas fa-calculator'],
-                    ['name' => '7- PMO Department', 'icon' => 'fas fa-project-diagram'],
-                    ['name' => '8- Ismail', 'icon' => 'fas fa-user-circle'],
-                    ['name' => '9- WR Project', 'icon' => 'fas fa-tasks'],
-                    ['name' => '10- Contract Department', 'icon' => 'fas fa-file-contract'],
-                    ['name' => '11- GM Emails', 'icon' => 'fas fa-envelope'],
-                    ['name' => '12- Bike & Car Rental Approval', 'icon' => 'fas fa-motorcycle'],
-                    ['name' => '13- XAD Pakistan Approval', 'icon' => 'fas fa-flag'],
-                    ['name' => '14- SOP’s Approval', 'icon' => 'fas fa-book'],
-                    ['name' => '15- CEO Office', 'icon' => 'fas fa-building'],
-                    ['name' => '16- Fleet Department', 'icon' => 'fas fa-truck'],
-                    ['name' => '17- Training & Development', 'icon' => 'fas fa-chalkboard-teacher'],
-                    ['name' => '18- General Docs for Signature', 'icon' => 'fas fa-pen-alt'],
-                ];
-            @endphp
-
-            @foreach ($departments as $department)
-                <div class="folder-card">
-                    <div class="folder-icon">
-                        <i class="{{ $department['icon'] }}"></i>
-                    </div>
-                    <div class="folder-title">{{ $department['name'] }}</div>
-                </div>
-            @endforeach
-        </div> --}}
+        <div class="header-with-icon text-center">
+            <i class="fas fa-folder-open header-icon"></i>
+            <h4 class="header-title mt-2">DOCUMENT MANAGEMENT</h4>
+        </div>
 
         <div class="folder-grid">
-            @foreach ($departments as $department)
+            {{-- CEO Approval Folder --}}
+            @if (isset($ceoApprovalCount) && $ceoApprovalCount > 0)
                 <div class="folder-card">
+                    <div class="folder-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="folder-title">CEO Approvals</div>
+                    <p class="document-count">{{ $ceoApprovalCount }} documents pending approval</p>
+                </div>
+            @endif
+
+            {{-- Department Folders --}}
+            @foreach ($departments as $department)
+                <a href="{{ route('departments.subcategories', $department->id) }}" class="folder-card">
                     <div class="folder-icon">
                         <i class="fas fa-folder"></i>
                     </div>
                     <div class="folder-title">{{ $department->name }}</div>
-                    <!-- Display Documents -->
-                    @if ($department->documents->count())
-                        <ul class="document-list">
-                            @foreach ($department->documents as $document)
-                                <li>{{ $document->name }}</li>
-                            @endforeach
-                        </ul>
-                    @else
-                        <p>No documents available.</p>
-                    @endif
-                </div>
+                    <p class="document-count">{{ $department->documents->count() }} document(s)</p>
+                </a>
             @endforeach
         </div>
     </div>

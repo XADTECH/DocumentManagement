@@ -8,9 +8,10 @@ use App\Http\Controllers\authentications\LoginBasic;
 use App\Http\Controllers\authentications\RegisterBasic;
 use App\Http\Controllers\authentications\ForgotPasswordBasic;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\ImportExportController;
 use App\Http\Controllers\SubcategoryController;
-use App\Http\Controllers\DocumentTypeController; 
+use App\Http\Controllers\DocumentTypeController;
 
 // Main Page Route
 // Public route for the login page with middleware to redirect if authenticated
@@ -67,6 +68,19 @@ Route::middleware(['checklogin'])->group(function () {
     Route::post('/update-subcategory/{id}', [SubcategoryController::class, 'update'])->name('subcategories.update');
     Route::delete('/delete-subcategory/{id}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
 
+    // Document Routes
+    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index'); // List all documents
+    Route::get('/add-document', [DocumentController::class, 'create'])->name('documents.create'); // Show create form
+    Route::post('/store-document', [DocumentController::class, 'store'])->name('documents.store'); // Store new document
+    Route::get('/edit-document/{id}', [DocumentController::class, 'edit'])->name('documents.edit'); // Show edit form
+    Route::post('/update-document/{id}', [DocumentController::class, 'update'])->name('documents.update'); // Update document
+    Route::delete('/delete-document/{id}', [DocumentController::class, 'destroy'])->name('documents.destroy'); // Delete document
+    Route::get('/departments/{id}/subcategories', [DocumentController::class, 'showSubcategories'])->name('departments.subcategories');
+    Route::get('/subcategories/{id}/documents', [DocumentController::class, 'showDocuments'])->name('subcategories.documents');
+    Route::get('/documents/{id}/download', [DocumentController::class, 'download'])->name('documents.download');
+
+
+
     Route::prefix('document-types')->group(function () {
         Route::get('/', [DocumentTypeController::class, 'index'])->name('document-types.index');
         Route::get('/add', [DocumentTypeController::class, 'create'])->name('document-types.create');
@@ -75,5 +89,4 @@ Route::middleware(['checklogin'])->group(function () {
         Route::put('/update/{id}', [DocumentTypeController::class, 'update'])->name('document-types.update');
         Route::delete('/delete/{id}', [DocumentTypeController::class, 'destroy'])->name('document-types.destroy');
     });
-    
 });

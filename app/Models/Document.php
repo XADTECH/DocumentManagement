@@ -15,29 +15,31 @@ class Document extends Model
      * @var array
      */
     protected $fillable = [
-        'name',           // The original file name
-        'file_path',      // File path in the storage
-        'department_id',  // Foreign key to departments
-        'subcategory_id', // Foreign key to subcategories
-        'category_id',    // Foreign key to categories
-        'uploaded_by',    // User ID of the uploader
-        'ceo_approval',   // Indicates if CEO approval is required
-        'approval_status' // Approval status of the document
+        'name',                // The document name
+        'file_paths',          // JSON array of file paths
+        'department_id',       // Department ID
+        'subcategory_id',      // Subcategory ID
+        'document_type_id',    // Document Type ID
+        'uploaded_by',         // User who uploaded the file
+        'ceo_approval',        // Flag for CEO approval requirement
+        'approval_status',     // Approval status
     ];
 
     /**
-     * Relationship with Department.
-     * A document belongs to a department.
+     * Cast the JSON column to an array.
+     *
+     * @var array
      */
+    protected $casts = [
+        'file_paths' => 'array', // Cast JSON column as an array
+    ];
+
+
     public function department()
     {
         return $this->belongsTo(Department::class);
     }
 
-    /**
-     * Relationship with Subcategory.
-     * A document belongs to a subcategory.
-     */
     public function subcategory()
     {
         return $this->belongsTo(Subcategory::class);
@@ -47,9 +49,9 @@ class Document extends Model
      * Relationship with Category.
      * A document belongs to a category.
      */
-    public function category()
+    public function documentType()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(DocumentType::class);
     }
 
     /**

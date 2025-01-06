@@ -15,7 +15,7 @@ class Subcategory extends Model
      * @var array
      */
     protected $fillable = [
-        'name',          // Subcategory name
+        'name', // Subcategory name
         'department_id', // Foreign key linking to a department
     ];
 
@@ -25,5 +25,10 @@ class Subcategory extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
     }
 }

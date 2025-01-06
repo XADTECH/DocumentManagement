@@ -5,8 +5,8 @@
     </a>
 </li>
 
-<li class="menu-item {{ request()->is('upload-document') ? 'active' : '' }}">
-    <a href="/upload-document" class="menu-link">
+<li class="menu-item {{ request()->is('add-document') ? 'active' : '' }}">
+    <a href="/add-document" class="menu-link">
         <i class="menu-icon tf-icons bx bx-file"></i>
         <div>Upload Document</div>
     </a>
