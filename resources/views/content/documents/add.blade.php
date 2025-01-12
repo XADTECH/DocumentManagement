@@ -97,7 +97,6 @@
                                     placeholder="Enter document name..." required />
                             </div>
 
-                            <!-- Department -->
                             <div class="mb-3 col-md-6">
                                 <label for="department_id" class="form-label">Department</label>
                                 <select class="form-control" id="department_id" name="department_id" required>
@@ -113,9 +112,6 @@
                                 <label for="subcategory_id" class="form-label">Subcategory</label>
                                 <select class="form-control" id="subcategory_id" name="subcategory_id" required>
                                     <option value="">Select Subcategory</option>
-                                    @foreach ($subcategories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
                                 </select>
                             </div>
 
@@ -124,13 +120,9 @@
                                 <label for="document_type_id" class="form-label">Document Type</label>
                                 <select class="form-control" id="document_type_id" name="document_type_id" required>
                                     <option value="">Select Document Type</option>
-                                    @foreach ($documentTypes as $document)
-                                        <option value="{{ $document->id }}">{{ $document->name }}</option>
-                                    @endforeach
                                 </select>
                             </div>
 
-                                                    
                             <!-- Upload Files -->
                             <div class="mb-3 col-md-6">
                                 <label for="files" class="form-label">Upload Files</label>
@@ -138,8 +130,8 @@
                                     required />
                             </div>
 
-                             <!-- CEO Approval -->
-                             <div class="mb-2 col-md-12">
+                            <!-- CEO Approval -->
+                            <div class="mb-2 col-md-12">
                                 <label for="ceo_approval" class="form-label">Require CEO Approval</label>
                                 <input class="form-check-input" type="checkbox" id="ceo_approval" name="ceo_approval"
                                     value="1" />
@@ -147,7 +139,7 @@
                                     approval</label>
                             </div>
 
-   
+
                             <!-- File Preview Section -->
                             <div class="file-preview mb-2" id="file-preview">
                                 <p class="text-muted">No files selected yet.</p>
@@ -171,6 +163,9 @@
     document.addEventListener("DOMContentLoaded", function() {
         const fileInput = document.getElementById("files");
         const filePreview = document.getElementById("file-preview");
+        const departmentDropdown = document.getElementById('department_id');
+        const subcategoryDropdown = document.getElementById('subcategory_id');
+        const documentTypeDropdown = document.getElementById('document_type_id');
 
         fileInput.addEventListener("change", function() {
             filePreview.innerHTML = ""; // Clear previous previews
@@ -239,5 +234,50 @@
             fileInput.files = dt.files;
             fileInput.dispatchEvent(new Event("change")); // Trigger change event
         }
+
+        // Update subcategories when a department is selected
+        departmentDropdown.addEventListener('change', function() {
+            const departmentId = this.value;
+
+            // Clear previous options
+            subcategoryDropdown.innerHTML = '<option value="">Select Subcategory</option>';
+            documentTypeDropdown.innerHTML = '<option value="">Select Document Type</option>';
+
+            if (departmentId) {
+                fetch(`/get-subcategories/${departmentId}`)
+                    .then(response => response.json())
+                    .then(subcategories => {
+                        subcategories.forEach(subcategory => {
+                            const option = document.createElement('option');
+                            option.value = subcategory.id;
+                            option.textContent = subcategory.name;
+                            subcategoryDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching subcategories:', error));
+            }
+        });
+
+        // Update document types when a subcategory is selected
+        subcategoryDropdown.addEventListener('change', function() {
+            const subcategoryId = this.value;
+
+            // Clear previous options
+            documentTypeDropdown.innerHTML = '<option value="">Select Document Type</option>';
+
+            if (subcategoryId) {
+                fetch(`/get-document-types/${subcategoryId}`)
+                    .then(response => response.json())
+                    .then(documentTypes => {
+                        documentTypes.forEach(docType => {
+                            const option = document.createElement('option');
+                            option.value = docType.id;
+                            option.textContent = docType.name;
+                            documentTypeDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching document types:', error));
+            }
+        });
     });
 </script>

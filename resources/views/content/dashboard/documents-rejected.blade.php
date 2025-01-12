@@ -1,5 +1,6 @@
 @extends('layouts/contentNavbarLayout')
 
+@section('title', $title)
 
 @section('vendor-style')
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}">
@@ -163,11 +164,11 @@
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
 
-              {{-- Page Header --}}
-              <div class="header-with-icon text-center">
-                <i class="fas fa-file-alt header-icon"></i>
-                <h4 class="header-title mt-2">Documents - {{$documents[0]->name}}</h4>
-            </div>
+        {{-- Page Header --}}
+        <div class="header-with-icon text-center">
+            <i class="fas fa-file-alt header-icon"></i>
+            <h4 class="header-title mt-2">{{ $title }}</h4>
+        </div>
 
 
         {{-- Document Display --}}

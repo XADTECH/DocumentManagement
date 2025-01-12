@@ -69,7 +69,7 @@ Route::middleware(['checklogin'])->group(function () {
     Route::delete('/delete-subcategory/{id}', [SubcategoryController::class, 'destroy'])->name('subcategories.destroy');
 
     // Document Routes
-    Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index'); // List all documents
+    Route::get('/list-documents', [DocumentController::class, 'myDocuments'])->name('documents.myDocuments'); // List all documents
     Route::get('/add-document', [DocumentController::class, 'create'])->name('documents.create'); // Show create form
     Route::post('/store-document', [DocumentController::class, 'store'])->name('documents.store'); // Store new document
     Route::get('/edit-document/{id}', [DocumentController::class, 'edit'])->name('documents.edit'); // Show edit form
@@ -77,9 +77,17 @@ Route::middleware(['checklogin'])->group(function () {
     Route::delete('/delete-document/{id}', [DocumentController::class, 'destroy'])->name('documents.destroy'); // Delete document
     Route::get('/departments/{id}/subcategories', [DocumentController::class, 'showSubcategories'])->name('departments.subcategories');
     Route::get('/subcategories/{id}/documents', [DocumentController::class, 'showDocuments'])->name('subcategories.documents');
-    Route::get('/documents/{id}/download', [DocumentController::class, 'download'])->name('documents.download');
-
-
+    Route::get('/subcategories/{subcategory}/document-types', [DocumentController::class, 'showDocumentTypes'])->name('subcategories.document-types');
+    Route::get('/document-types/{documentType}/documents', [DocumentController::class, 'showDocuments'])->name('document-types.documents');
+    Route::get('/get-subcategories/{department_id}', [DocumentController::class, 'getSubcategories'])->name('get.subcategories');
+    Route::get('/get-document-types/{subcategory_id}', [DocumentController::class, 'getDocumentTypes'])->name('get.document.types');
+    Route::get('/pending-documents', [DocumentController::class, 'documentPending'])->name('documents.pending');
+    Route::get('/approved-documents', [DocumentController::class, 'documentApproved'])->name('documents.approved');
+    Route::get('/rejected-documents', [DocumentController::class, 'documentRejected'])->name('documents.rejected');
+    Route::get('/documents/{id}', [DocumentController::class, 'show'])->name('documents.show');
+    Route::post('/documents/update-status', [DocumentController::class, 'updateStatus'])->name('documents.updateStatus');
+    Route::post('/documents/download', [DocumentController::class, 'download'])->name('documents.download');
+    Route::get('/documents/view/{id}', [DocumentController::class, 'view'])->name('documents.view');
 
     Route::prefix('document-types')->group(function () {
         Route::get('/', [DocumentTypeController::class, 'index'])->name('document-types.index');

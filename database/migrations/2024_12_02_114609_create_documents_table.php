@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // The original file name
+            $table->string('remarks')->nullable(); // The original file name
             $table->json('file_paths'); // Store multiple file paths as a JSON array
             $table->unsignedInteger('department_id'); // The department ID
             $table->unsignedBigInteger('subcategory_id')->nullable(); 

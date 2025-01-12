@@ -5,8 +5,7 @@
     </a>
 </li>
 
-<li
-    class="menu-item {{ request()->is('departments') || request()->is('departments') ? 'active open' : '' }}">
+<li class="menu-item {{ request()->is('departments') || request()->is('departments') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-user"></i>
         <div>Department Management</div>
@@ -25,8 +24,7 @@
     </ul>
 </li>
 
-<li
-    class="menu-item {{ request()->is('subcategories') || request()->is('add-subcategories') ? 'active open' : '' }}">
+<li class="menu-item {{ request()->is('subcategories') || request()->is('add-subcategories') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-category"></i>
         <div>Subcategory Management</div>
@@ -45,8 +43,7 @@
     </ul>
 </li>
 
-<li
-    class="menu-item {{ request()->is('document-types') || request()->is('add-document-type') ? 'active open' : '' }}">
+<li class="menu-item {{ request()->is('document-types') || request()->is('add-document-type') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-file"></i>
         <div>Document Type Management</div>
@@ -62,7 +59,7 @@
                 <div>Add Document Type</div>
             </a>
         </li>
-        
+
     </ul>
 </li>
 
@@ -73,25 +70,54 @@
         <div>Upload Document</div>
     </a>
 </li>
-<li class="menu-item {{ request()->is('documents') ? 'active' : '' }}">
-    <a href="/documents" class="menu-link">
-        <i class="menu-icon tf-icons bx bx-file"></i>
-        <div>My Documents</div>
-    </a>
+
+<li class="menu-item 
+    {{ request()->routeIs('documents.myDocuments') 
+       || request()->routeIs('documents.pending')
+       || request()->routeIs('documents.approved')
+       || request()->routeIs('documents.rejected') 
+       ? 'active open' : '' 
+    }}">
+  <a href="javascript:void(0);" class="menu-link menu-toggle">
+    <i class="menu-icon tf-icons bx bx-file"></i>
+    <div>Document Management</div>
+  </a>
+  <ul class="menu-sub">
+    <li class="menu-item {{ request()->routeIs('documents.myDocuments') ? 'active' : '' }}">
+      {{-- Notice the route() helper here --}}
+      <a href="{{ route('documents.myDocuments') }}" class="menu-link">
+        <div>List</div>
+      </a>
+    </li>
+    <li class="menu-item {{ request()->routeIs('documents.pending') ? 'active' : '' }}">
+      <a href="{{ route('documents.pending') }}" class="menu-link">
+        <div>Pending Documents</div>
+      </a>
+    </li>
+    <li class="menu-item {{ request()->routeIs('documents.approved') ? 'active' : '' }}">
+      <a href="{{ route('documents.approved') }}" class="menu-link">
+        <div>Approved Documents</div>
+      </a>
+    </li>
+    <li class="menu-item {{ request()->routeIs('documents.rejected') ? 'active' : '' }}">
+      <a href="{{ route('documents.rejected') }}" class="menu-link">
+        <div>Rejected Documents</div>
+      </a>
+    </li>
+  </ul>
 </li>
 
-<li class="menu-item {{ request()->is('approvals') ? 'active' : '' }}">
+{{-- <li class="menu-item {{ request()->is('approvals') ? 'active' : '' }}">
     <a href="/approvals" class="menu-link">
         <i class="menu-icon tf-icons bx bx-detail"></i>
         <div>Documents For Approvals</div>
     </a>
-</li>
+</li> --}}
 
 
 
 <!-- User Management -->
-<li
-    class="menu-item {{ request()->is('/users') || request()->is('/add-user') ? 'active open' : '' }}">
+<li class="menu-item {{ request()->is('/users') || request()->is('/add-user') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
         <i class="menu-icon tf-icons bx bx-user"></i>
         <div>User Management</div>
@@ -110,12 +136,12 @@
     </ul>
 </li>
 
-<li class="menu-item {{ request()->is('approvals-history') ? 'active' : '' }}">
+{{-- <li class="menu-item {{ request()->is('approvals-history') ? 'active' : '' }}">
     <a href="/approvals-history" class="menu-link">
         <i class="menu-icon tf-icons bx bx-detail"></i>
         <div>Approvals History</div>
     </a>
-</li>
+</li> --}}
 
 <li class="menu-item {{ request()->is('settings') ? 'active' : '' }}">
     <a href="/settings" class="menu-link">

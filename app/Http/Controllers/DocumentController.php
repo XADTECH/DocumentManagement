@@ -7,45 +7,133 @@ use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use Illuminate\Http\Request;
 use App\Models\Department;
+use App\Models\User;
 use App\Models\SubCategory;
 use App\Models\DocumentType;
 use Illuminate\Support\Facades\File; // Ensure this is imported
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class DocumentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $user = Auth::user();
 
         // Admin, Secretary, and CEO can see all departments and documents
         if (in_array($user->role, ['Admin', 'Secretary', 'CEO'])) {
-            $departments = Department::with(['documents' => function ($query) {
-                $query->select('id', 'name', 'department_id', 'ceo_approval', 'approval_status');
-            }])->get();
+            $departments = Department::with([
+                'documents' => function ($query) {
+                    $query->select('id', 'name', 'department_id', 'ceo_approval', 'approval_status');
+                },
+            ])->get();
 
             // Count documents requiring CEO approval
-            $ceoApprovalCount = $departments->flatMap->documents->filter(function ($doc) {
-                return $doc->ceo_approval && $doc->approval_status === 'pending';
-            })->count();
-
-            
+            $ceoApprovalCount = $departments->flatMap->documents
+                ->filter(function ($doc) {
+                    return $doc->ceo_approval && $doc->approval_status === 'pending';
+                })
+                ->count();
 
             return view('dashboard', compact('departments', 'ceoApprovalCount'));
         } else {
             // For other roles, filter by uploaded_by field
-            $departments = Department::with(['documents' => function ($query) use ($user) {
-                $query->where('uploaded_by', $user->id);
-            }])->get();
-
-
-            
+            $departments = Department::with([
+                'documents' => function ($query) use ($user) {
+                    $query->where('uploaded_by', $user->id);
+                },
+            ])->get();
 
             return view('dashboard', compact('departments'));
         }
+    }
+
+   
+
+    // Show the document details
+    public function show($id)
+    {
+        // Fetch the document along with relationships
+        $document = Document::with(['department', 'user', 'subcategory', 'documentType'])->findOrFail($id);
+
+        return view('content.dashboard.dashboard-document-detail', compact('document'));
+    }
+    public function updateStatus(Request $request)
+    {
+        // Validate the request input
+        $request->validate([
+            'document_id' => 'required|exists:documents,id',
+            'status' => 'required|in:Approved,Pending,Rejected',
+            'remarks' => 'nullable|string|max:255', // Validate remarks
+        ]);
+
+        // Retrieve the document using the provided document ID
+        $document = Document::findOrFail($request->input('document_id'));
+
+        // Update the document fields based on the status
+        switch ($request->input('status')) {
+            case 'Approved':
+                $document->approval_status = 'Approved';
+                $document->ceo_approval = 0;
+                break;
+            case 'Pending':
+                $document->approval_status = 'Pending';
+                $document->ceo_approval = 1;
+                break;
+            case 'Rejected':
+                $document->approval_status = 'Rejected';
+                $document->ceo_approval = 0;
+                break;
+        }
+
+        // Update remarks field
+        $document->remarks = $request->input('remarks');
+
+        // Save the updated document
+        $document->save();
+
+        // Redirect to the specific route with a success message
+        return redirect()->route('dashboard-analytics')->with('success', 'Document status and remarks updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        try {
+            // Find the document by ID
+            $document = Document::findOrFail($id);
+
+            // Decode the file paths stored in the database
+            $filePaths = json_decode($document->file_path);
+
+            // Ensure file paths are valid
+            if (!empty($filePaths)) {
+                foreach ($filePaths as $filePath) {
+                    // Use public_path or Storage to locate files
+                    $fullPath = public_path($filePath); // Adjust this as needed
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath); // Delete file from the filesystem
+                    } else {
+                        // Optional: Log file not found for debugging
+                        \Log::warning("File not found: $fullPath");
+                    }
+                }
+            }
+
+            // Delete the document record from the database
+            $document->delete();
+
+            // Set a success message
+            Session::flash('success', 'Document and associated files deleted successfully.');
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Error deleting document: ' . $e->getMessage());
+
+            // Set an error message
+            Session::flash('error', 'An error occurred while deleting the document and files.');
+        }
+
+        // Redirect to the dashboard-analytics route
+        return redirect()->route('dashboard-analytics');
     }
 
     /**
@@ -54,12 +142,12 @@ class DocumentController extends Controller
     public function create()
     {
         $user = auth()->user();
-    
+
         // Initialize variables
         $departments = [];
         $subcategories = [];
         $documentTypes = [];
-    
+
         // Check the user's role
         if (in_array($user->role, ['Admin', 'Secretary', 'CEO'])) {
             // Admin, Secretary, and CEO can access all departments, subcategories, and document types
@@ -72,7 +160,7 @@ class DocumentController extends Controller
             $subcategories = Subcategory::whereIn('department_id', $departments->pluck('id'))->get(); // Get subcategories by department
             $documentTypes = DocumentType::whereIn('department_id', $departments->pluck('id'))->get(); // Get document types by department
         }
-    
+
         // Pass data to the view
         return view('content.documents.add', [
             'departments' => $departments,
@@ -80,11 +168,8 @@ class DocumentController extends Controller
             'documentTypes' => $documentTypes,
         ]);
     }
-    
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    //store the document
     public function store(Request $request)
     {
         // Validate the request
@@ -93,7 +178,7 @@ class DocumentController extends Controller
             'department_id' => 'required|exists:departments,id',
             'subcategory_id' => 'required|exists:subcategories,id',
             'document_type_id' => 'required',
-            'files.*' => 'required|file|max:2048', 
+            'files.*' => 'required|file|max:2048',
         ]);
 
         // Fetch the names using the IDs
@@ -118,12 +203,11 @@ class DocumentController extends Controller
         }
 
         // Save the name with extension (using the last uploaded file for simplicity)
-        $finalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)
-        . '.' . $file->getClientOriginalExtension();
+        $finalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $file->getClientOriginalExtension();
 
         // Save document record in the database
         Document::create([
-            'name' => $finalFileName,
+            'name' => $request->input('name'),
             'file_paths' => json_encode($filePaths),
             'department_id' => $validatedData['department_id'],
             'subcategory_id' => $validatedData['subcategory_id'],
@@ -133,61 +217,266 @@ class DocumentController extends Controller
             'approval_status' => 'Pending', // Default approval status
         ]);
 
-        
-
         return redirect()->back()->with('success', 'Document uploaded successfully.');
     }
 
-
+    //show all catgories and doucment count
     public function showSubcategories($id)
     {
-        // Fetch the department
-        $department = Department::with(['subcategories.documents'])->findOrFail($id);
+        $user = Auth::user();
 
-        // Fetch subcategories with document counts
-        $subcategories = $department->subcategories()->withCount('documents')->get();
+        // Fetch the department
+        $department = Department::findOrFail($id);
+
+        // Check if the user is Admin, CEO, or Secretary
+        if (in_array($user->role, ['Admin', 'Secretary', 'CEO'])) {
+            // Fetch all subcategories and calculate total files for each
+            $subcategories = $department->subcategories->map(function ($subcategory) {
+                $totalFiles = $subcategory->documents->reduce(function ($carry, $document) {
+                    $filePaths = json_decode($document->file_paths, true);
+                    return $carry + (is_array($filePaths) ? count($filePaths) : 0);
+                }, 0);
+
+                $subcategory->total_files = $totalFiles; // Add a dynamic property for the total files
+                return $subcategory;
+            });
+        } else {
+            // Fetch subcategories with only the documents uploaded by the current user
+            $subcategories = $department->subcategories->map(function ($subcategory) use ($user) {
+                $filteredDocuments = $subcategory->documents->filter(function ($document) use ($user) {
+                    return $document->uploaded_by === $user->id;
+                });
+
+                $totalFiles = $filteredDocuments->reduce(function ($carry, $document) {
+                    $filePaths = json_decode($document->file_paths, true);
+                    return $carry + (is_array($filePaths) ? count($filePaths) : 0);
+                }, 0);
+
+                $subcategory->total_files = $totalFiles; // Add a dynamic property for the total files
+                return $subcategory;
+            });
+        }
 
         return view('content.dashboard.dashboards-subcategories', compact('department', 'subcategories'));
     }
 
-    //show documents
+    //show all documents in a view
     public function showDocuments($id)
     {
-        // Fetch the subcategory with its documents
-        $subcategory = Subcategory::with('documents')->findOrFail($id);
+        // Fetch the document type by ID
+        $documentType = DocumentType::findOrFail($id);
 
-        return view('content.dashboard.dashboards-show-documents', compact('subcategory'));
+        // Check if the logged-in user has a role of Admin, Secretary, or CEO
+        if (
+            auth()
+                ->user()
+                ->hasRole(['Admin', 'Secretary', 'CEO'])
+        ) {
+            // Fetch all documents for the document type
+            $documents = Document::where('document_type_id', $id)->get();
+        } else {
+            // Fetch only documents uploaded by the logged-in user
+            $documents = Document::where('document_type_id', $id)->where('uploaded_by', auth()->id())->get();
+        }
+
+        return view('content.dashboard.dashboards-show-documents', compact('documentType', 'documents'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Document $document)
+    //show all document types and count
+    public function showDocumentTypes(Subcategory $subcategory)
     {
-        //
+        $user = Auth::user();
+
+        if (in_array($user->role, ['Admin', 'Secretary', 'CEO'])) {
+            // Admin, Secretary, and CEO see all document types and their related files
+            $documentTypes = DocumentType::where('subcategory_id', $subcategory->id)
+                ->with([
+                    'documents' => function ($query) {
+                        $query->select('id', 'name', 'file_paths', 'document_type_id', 'uploaded_by', 'subcategory_id');
+                    },
+                ])
+                ->get();
+
+            // Calculate total files for each document type
+            $documentTypes = $documentTypes->map(function ($documentType) {
+                $totalFiles = $documentType->documents->reduce(function ($carry, $document) {
+                    $filePaths = json_decode($document->file_paths, true);
+                    return $carry + (is_array($filePaths) ? count($filePaths) : 0);
+                }, 0);
+
+                $documentType->total_files = $totalFiles; // Add a dynamic property for total files
+                return $documentType;
+            });
+            // return response()->json($documentTypes);
+        } else {
+            // Other users see only their own uploaded documents for each document type
+            $documentTypes = DocumentType::where('subcategory_id', $subcategory->id)
+                ->with([
+                    'documents' => function ($query) use ($user) {
+                        $query->where('uploaded_by', $user->id)->select('id', 'name', 'file_paths', 'document_type_id', 'uploaded_by', 'subcategory_id');
+                    },
+                ])
+                ->get();
+
+            // Calculate total files for each document type
+            $documentTypes = $documentTypes->map(function ($documentType) {
+                $totalFiles = $documentType->documents->reduce(function ($carry, $document) {
+                    $filePaths = json_decode($document->file_paths, true);
+                    return $carry + (is_array($filePaths) ? count($filePaths) : 0);
+                }, 0);
+
+                $documentType->total_files = $totalFiles; // Add a dynamic property for total files
+                return $documentType;
+            });
+        }
+
+        return view('content.dashboard.dashboard-document-types', compact('subcategory', 'documentTypes'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Document $document)
+   
+
+
+    public function showApprovedDocuments()
     {
-        //
+        $user = Auth::user();
+        $title = 'CEO Approved Documents';
+
+        if (in_array($user->role, ['Admin', 'Secretary', 'CEO'])) {
+            // Admin, Secretary, and CEO can see all approved documents
+            $documents = Document::with(['user', 'department'])
+                ->where('ceo_approval', false)
+                ->where('approval_status', 'Approved')
+                ->get();
+        } else {
+            // Regular users can only see their uploaded approved documents
+            $documents = Document::with(['user', 'department'])
+                ->where('ceo_approval', false)
+                ->where('approval_status', 'Approved')
+                ->where('uploaded_by', $user->id)
+                ->get();
+        }
+
+        return view('content.dashboard.documents-approved', compact('documents', 'title'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateDocumentRequest $request, Document $document)
+    public function showRejectedDocuments()
     {
-        //
+        $user = Auth::user();
+        $title = 'CEO Rejected Documents';
+
+        if (in_array($user->role, ['Admin', 'Secretary', 'CEO'])) {
+            // Admin, Secretary, and CEO can see all rejected documents
+            $documents = Document::with(['user', 'department'])
+                ->where('ceo_approval', false)
+                ->where('approval_status', 'Rejected')
+                ->get();
+        } else {
+            // Regular users can only see their uploaded rejected documents
+            $documents = Document::with(['user', 'department'])
+                ->where('ceo_approval', false)
+                ->where('approval_status', 'Rejected')
+                ->where('uploaded_by', $user->id)
+                ->get();
+        }
+
+        return view('content.dashboard.documents-rejected', compact('documents', 'title'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Document $document)
+    public function getSubcategories($department_id)
     {
-        //
+        $subcategories = Subcategory::where('department_id', $department_id)->get();
+        return response()->json($subcategories);
+    }
+
+    public function getDocumentTypes($subcategory_id)
+    {
+        $documentTypes = DocumentType::where('subcategory_id', $subcategory_id)->get();
+        return response()->json($documentTypes);
+    }
+
+    public function download(Request $request)
+    {
+        // Validate the filePath input
+        $validated = $request->validate([
+            'filePath' => 'required|string',
+        ]);
+
+        $filePath = $validated['filePath'];
+
+        // Check if the file exists
+        if (!file_exists(public_path($filePath))) {
+            return back()->with('error', 'File not found.');
+        }
+
+        // Generate the file name for download
+        $fileName = basename($filePath);
+
+        // Return the file for download
+        return response()->download(public_path($filePath), $fileName);
+    }
+
+    public function myDocuments(Request $request)
+    {
+        $user = auth()->user();
+    
+        if ($user->hasRole(['Admin', 'CEO', 'Secretary'])) {
+            $documents = Document::with(['department', 'subcategory', 'documentType'])->get();
+        } else {
+            $documents = Document::with(['user','department', 'subcategory', 'documentType'])
+                ->where('uploaded_by', $user->id)
+                ->get();
+        }
+    
+        // return response()->json($documents); // comment this out
+        return view('content.documents.myDocuments', compact('documents'));
+    }
+    
+
+    public function documentPending()
+    {
+        $user = auth()->user();
+        $documents = $user->hasRole(['Admin', 'CEO', 'Secretary'])
+            ? Document::with(['user', 'department', 'subcategory', 'documentType'])
+                ->where('approval_status', 'Pending')
+                ->get()
+            : Document::with(['user', 'department', 'subcategory', 'documentType'])
+                ->where('uploaded_by', $user->id)
+                ->where('approval_status', 'Pending')
+                ->get();
+
+        $title = 'Pending Documents';
+        return view('content.documents.pending-documents', compact('documents', 'title'));
+    }
+
+    public function documentApproved()
+    {
+        $user = auth()->user();
+        $documents = $user->hasRole(['Admin', 'CEO', 'Secretary'])
+            ? Document::with(['user', 'department', 'subcategory', 'documentType'])
+                ->where('approval_status', 'Approved')
+                ->get()
+            : Document::with(['user', 'department', 'subcategory', 'documentType'])
+                ->where('uploaded_by', $user->id)
+                ->where('approval_status', 'Approved')
+                ->get();
+
+        $title = 'Approved Documents';
+        return view('content.documents.approveddocuments', compact('documents', 'title'));
+    }
+
+    public function documentRejected()
+    {
+        $user = auth()->user();
+        $documents = $user->hasRole(['Admin', 'CEO', 'Secretary'])
+            ? Document::with(['user', 'department', 'subcategory', 'documentType'])
+                ->where('approval_status', 'Rejected')
+                ->get()
+            : Document::with(['user', 'department', 'subcategory', 'documentType'])
+                ->where('uploaded_by', $user->id)
+                ->where('approval_status', 'Rejected')
+                ->get();
+
+        $title = 'Rejected Documents';
+        return view('content.documents.rejecteddocuments', compact('documents', 'title'));
     }
 }

@@ -15,9 +15,9 @@ class DocumentType extends Model
      * @var array
      */
     protected $fillable = [
-        'name',           // Name of the document type
+        'name', // Name of the document type
         'subcategory_id', // Foreign key linking to a subcategory
-        'department_id'
+        'department_id',
     ];
 
     /**
@@ -27,9 +27,14 @@ class DocumentType extends Model
     {
         return $this->belongsTo(Department::class);
     }
-    
+
     public function subcategory()
     {
         return $this->belongsTo(Subcategory::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'document_type_id');
     }
 }

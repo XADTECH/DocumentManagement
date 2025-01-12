@@ -27,6 +27,11 @@ class User extends Authenticatable
         'permissions' => 'array',
     ];
 
+    public function documents()
+    {
+        return $this->hasMany(Document::class, 'uploaded_by');
+    }
+
     /**
      * Automatically hash the password when it's set.
      *

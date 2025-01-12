@@ -1,6 +1,6 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'Subcategories - ' . $department->name)
+@section('title', 'Document Types - ' . $subcategory->name)
 
 @section('vendor-style')
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}">
@@ -8,7 +8,7 @@
     <style>
         .folder-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             padding: 20px;
         }
@@ -25,8 +25,6 @@
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
-            text-decoration: none;
-            color: inherit;
         }
 
         .folder-card:hover {
@@ -52,36 +50,31 @@
             color: #007bff;
             margin-top: 5px;
         }
-
-        .back-button {
-            margin-bottom: 20px;
-        }
     </style>
 @endsection
 
 @section('content')
     <div class="container mt-5">
-        <div class="back-button">
-            <a href="{{ route('dashboard-analytics') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Departments
-            </a>
-        </div>
+        <a href="{{ route('departments.subcategories', $subcategory->department_id) }}" class="btn btn-secondary mb-3">
+            <i class="fas fa-arrow-left"></i> Back to Subcategories
+        </a>
 
         <div class="header-with-icon text-center">
             <i class="fas fa-folder-open header-icon"></i>
-            <h4 class="header-title mt-2">{{ $department->name }} - Subcategories</h4>
+            <h4 class="header-title mt-2">{{ $subcategory->name }} - Document Types</h4>
         </div>
 
         <div class="folder-grid">
-            @foreach ($subcategories as $subcategory)
-                <a href="{{ route('subcategories.document-types', $subcategory->id) }}" class="folder-card">
+            @foreach ($documentTypes as $documentType)
+                <a href="{{ route('document-types.documents', $documentType->id) }}" class="folder-card">
                     <div class="folder-icon">
                         <i class="fas fa-folder"></i>
                     </div>
-                    <div class="folder-title">{{ $subcategory->name }}</div>
-                    <p class="document-count">{{ $subcategory->total_files }} file(s)</p>
+                    <div class="folder-title">{{ $documentType->name }}</div>
+                    <p class="document-count">{{ $documentType->total_files }} document(s)</p>
                 </a>
             @endforeach
         </div>
+        
     </div>
 @endsection

@@ -35,6 +35,12 @@ class Document extends Model
     ];
 
 
+    // Define the user relationship
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'uploaded_by');
+    }
+    
     public function department()
     {
         return $this->belongsTo(Department::class);
@@ -62,4 +68,6 @@ class Document extends Model
     {
         return $this->belongsTo(User::class, 'uploaded_by');
     }
+
+    
 }

@@ -49,7 +49,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Document Type Name</label>
-                            <input class="form-control" type="text" id="name" name="name" placeholder="Enter document type name..." autofocus />
+                            <input class="form-control" type="text" id="name" name="name" placeholder="Enter document type name..." required autofocus />
                         </div>
                         <div class="mb-3 col-md-6">
                             <label for="department_id" class="form-label">Department</label>
@@ -65,9 +65,7 @@
                             <label for="subcategory_id" class="form-label">Subcategory</label>
                             <select class="form-control" id="subcategory_id" name="subcategory_id" required>
                                 <option value="">Select Subcategory</option>
-                                @foreach($subcategories as $subcategory)
-                                <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
-                                @endforeach
+                                <!-- Options dynamically populated -->
                             </select>
                         </div>
                     </div>
@@ -80,5 +78,39 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const departmentDropdown = document.getElementById('department_id');
+        const subcategoryDropdown = document.getElementById('subcategory_id');
+
+        // Update subcategories when a department is selected
+        departmentDropdown.addEventListener('change', function () {
+            const departmentId = this.value;
+
+            // Clear previous options
+            subcategoryDropdown.innerHTML = '<option value="">Select Subcategory</option>';
+
+            if (departmentId) {
+                fetch(`/get-subcategories/${departmentId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(subcategories => {
+                        subcategories.forEach(subcategory => {
+                            const option = document.createElement('option');
+                            option.value = subcategory.id;
+                            option.textContent = subcategory.name;
+                            subcategoryDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching subcategories:', error));
+            }
+        });
+    });
+</script>
 
 @endsection
