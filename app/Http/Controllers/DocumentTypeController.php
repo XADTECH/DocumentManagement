@@ -46,7 +46,7 @@ class DocumentTypeController extends Controller
         // return response($request->all());
         // Validate the input
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:document_types,name',
+            'name' => 'required|string|max:255',
             'department_id' => 'required|exists:departments,id', // Validate department_id
             'subcategory_id' => 'required|exists:subcategories,id', // Validate subcategory_id
         ]);
@@ -89,14 +89,14 @@ class DocumentTypeController extends Controller
         $id = $request->input('id');
     
         // Validate the request
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:document_types,name,' . $id,
-        ]);
+        // $validatedData = $request->validate([
+        //     'name' => 'required|string|max:255|unique:document_types,name,' . $id,
+        // ]);
     
         // Find the Document Type and update it
         $documentType = DocumentType::findOrFail($id);
         $documentType->update([
-            'name' => $validatedData['name'],
+            'name' => $request->name,
         ]);
     
         // Redirect back with a success message

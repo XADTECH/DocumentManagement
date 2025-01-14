@@ -85,6 +85,7 @@ Route::middleware(['checklogin'])->group(function () {
     Route::get('/approved-documents', [DocumentController::class, 'documentApproved'])->name('documents.approved');
     Route::get('/rejected-documents', [DocumentController::class, 'documentRejected'])->name('documents.rejected');
     Route::get('/documents/{id}', [DocumentController::class, 'show'])->name('documents.show');
+    Route::get('/document/{id}', [DocumentController::class, 'showDetail'])->name('document.showDetail');
     Route::post('/documents/update-status', [DocumentController::class, 'updateStatus'])->name('documents.updateStatus');
     Route::post('/documents/download', [DocumentController::class, 'download'])->name('documents.download');
     Route::get('/documents/view/{id}', [DocumentController::class, 'view'])->name('documents.view');

@@ -180,7 +180,7 @@
         
                 @if (is_array($filePaths))
                     @foreach ($filePaths as $filePath)
-                        <a href="{{ route('documents.show', $document->id) }}"
+                        <a href="{{ route('document.showDetail', $document->id) }}"
                             class="document-card
                                 {{ $document->approval_status === 'Approved' ? 'border-approved' : '' }}
                                 {{ $document->approval_status === 'Rejected' ? 'border-rejected' : '' }}

@@ -58,6 +58,34 @@ class DocumentController extends Controller
 
         return view('content.dashboard.dashboard-document-detail', compact('document'));
     }
+
+    //show the document detail another way
+    public function showDetail($id)
+{
+    // Set the page title
+    $title = 'Document Details';
+
+    // Fetch the specific document by ID along with its relationships
+    $document = Document::with(['user', 'department'])->find($id);
+
+    if (!$document) {
+        // Handle the case where the document is not found
+        return redirect()->back()->with('error', 'Document not found.');
+    }
+
+    // Check if the user has permission to view the document
+    $user = auth()->user(); // Assuming you're using Laravel's auth system
+
+    if (!in_array($user->role, ['Admin', 'Secretary', 'CEO']) && $document->uploaded_by !== $user->id) {
+        // Redirect if the user is not authorized to view the document
+        return redirect()->back()->with('error', 'You do not have permission to view this document.');
+    }
+
+    // Pass the document and title to the view
+    return view('content.dashboard.documents-detail', compact('document', 'title'));
+}
+
+
     public function updateStatus(Request $request)
     {
         // Validate the request input
