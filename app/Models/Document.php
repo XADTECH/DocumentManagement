@@ -16,6 +16,7 @@ class Document extends Model
      */
     protected $fillable = [
         'name',                // The document name
+        'unique_id',
         'file_paths',          // JSON array of file paths
         'department_id',       // Department ID
         'subcategory_id',      // Subcategory ID

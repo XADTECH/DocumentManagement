@@ -45,10 +45,10 @@
                 <thead>
                     <tr>
                         <th>#</th>
+                        <th>ID</th>
                         <th>Document</th>
                         <th>Department</th>
                         <th>Sub Department</th>
-                        <th>Type</th>
                         <th>User</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -62,10 +62,12 @@
 
                         <tr>
                             <td>{{ $index + 1 }}</td>
+                            <td class="searchable">
+                                <a href="{{ route('document.showDetail', $document->id) }}">{{ $document->unique_id }}</a>
+                            </td>                            
                             <td class="searchable">{{ $document->name }}</td>
                             <td class="searchable">{{ $document->department->name ?? 'N/A' }}</td>
                             <td class="searchable">{{ $document->subcategory->name ?? 'N/A' }}</td>
-                            <td class="searchable">{{ $document->documentType->name ?? 'N/A' }}</td>
                             <td class="searchable">
                                 {{ $document->user->first_name . ' ' . $document->user->last_name ?? 'N/A' }}
                             </td>
@@ -85,12 +87,12 @@
                                 <a href="javascript:void(0)" class="btn btn-sm btn-primary"
                                     data-document-id="{{ $document->id }}" data-file-paths="{{ $document->file_paths }}"
                                     data-remarks="{{ $document->remarks }}" onclick="showDocumentFiles(this)">
-                                    Details
+                                    View Docs
                                 </a>
 
                                 @if (auth()->user()->hasRole(['Admin', 'CEO', 'Secretary']))
-                                    <a href="{{ route('documents.edit', $document->id) }}"
-                                        class="btn btn-sm btn-warning">Edit</a>
+                                    {{-- <a href="{{ route('documents.edit', $document->id) }}"
+                                        class="btn btn-sm btn-warning">Edit</a> --}}
                                     <form action="{{ route('documents.destroy', $document->id) }}" method="POST"
                                         style="display:inline;">
                                         @csrf
@@ -169,7 +171,7 @@
         function showDocumentFiles(button) {
             console.log(button);
             const filePaths = JSON.parse(button.getAttribute('data-file-paths'));
-            
+
             const modalBody = document.getElementById('documentFiles');
             const remarks = button.getAttribute('data-remarks'); // Get remarks from data attribute
             modalBody.innerHTML = ''; // Clear any existing content

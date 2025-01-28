@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 14, 2025 at 08:29 PM
+-- Generation Time: Jan 28, 2025 at 07:33 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -90,6 +90,7 @@ INSERT INTO `departments` (`id`, `name`, `created_at`, `updated_at`) VALUES
 CREATE TABLE `documents` (
   `id` bigint UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unique_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remarks` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `file_paths` json NOT NULL,
   `department_id` int UNSIGNED NOT NULL,
@@ -106,9 +107,9 @@ CREATE TABLE `documents` (
 -- Dumping data for table `documents`
 --
 
-INSERT INTO `documents` (`id`, `name`, `remarks`, `file_paths`, `department_id`, `subcategory_id`, `document_type_id`, `uploaded_by`, `ceo_approval`, `approval_status`, `created_at`, `updated_at`) VALUES
-(17, 'Invoice', 'document in pending', '\"[\\\"public\\\\/documents\\\\/Account Department\\\\/Cashier\\\\/Invoice\\\\/invoice.png\\\"]\"', 2, 1, 1, 44, 1, 'Pending', '2025-01-12 19:29:46', '2025-01-14 15:58:40'),
-(18, 'bills', 'documents are approved', '\"[\\\"public\\\\/documents\\\\/Account Department\\\\/Cashier\\\\/Receipts\\\\/invoice.png\\\",\\\"public\\\\/documents\\\\/Account Department\\\\/Cashier\\\\/Receipts\\\\/January-4-2025_daily_working_report.docx\\\",\\\"public\\\\/documents\\\\/Account Department\\\\/Cashier\\\\/Receipts\\\\/Offshore Staff Assessment.pdf\\\"]\"', 2, 1, 2, 33, 0, 'Approved', '2025-01-12 19:45:06', '2025-01-13 00:40:08');
+INSERT INTO `documents` (`id`, `name`, `unique_id`, `remarks`, `file_paths`, `department_id`, `subcategory_id`, `document_type_id`, `uploaded_by`, `ceo_approval`, `approval_status`, `created_at`, `updated_at`) VALUES
+(27, 'Invoice for Splash Co LTD', 'DOC97450', 'document is rejected by CEO', '\"[\\\"public\\\\/documents\\\\/Account Department\\\\/Cashier\\\\/Invoice\\\\/HR10-ECF-2024 ( Employee clearance form) (1).pdf\\\"]\"', 2, 1, 1, 44, 0, 'Rejected', '2025-01-15 10:37:07', '2025-01-15 11:02:59'),
+(29, 'secretarial approval', 'DOC67914', NULL, '\"[\\\"public\\\\/documents\\\\/Secretary\\\\/General Documents\\\\/Documents\\\\/invoice.jpg\\\"]\"', 13, 35, 13, 43, 1, 'Pending', '2025-01-15 11:10:12', '2025-01-15 11:10:12');
 
 -- --------------------------------------------------------
 
@@ -136,7 +137,8 @@ INSERT INTO `document_types` (`id`, `name`, `department_id`, `subcategory_id`, `
 (6, 'Notes', 2, 1, '2024-12-30 13:31:40', '2024-12-30 13:32:48'),
 (9, 'Documents', 2, 34, '2025-01-14 16:19:06', '2025-01-14 16:19:06'),
 (11, 'Documents', 4, 20, '2025-01-14 16:23:36', '2025-01-14 16:23:36'),
-(12, 'Documents', 5, 29, '2025-01-14 16:24:29', '2025-01-14 16:24:29');
+(12, 'Documents', 5, 29, '2025-01-14 16:24:29', '2025-01-14 16:24:29'),
+(13, 'Documents', 13, 35, '2025-01-15 08:31:03', '2025-01-15 08:31:03');
 
 -- --------------------------------------------------------
 
@@ -190,7 +192,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (17, '2024_12_30_113526_create_document_types_table', 6),
 (18, '2024_12_02_114608_create_documents_table', 7),
 (19, '2024_12_02_114609_create_documents_table', 8),
-(20, '2025_01_14_202241_remove_unique_constraint_from_document_types_name', 9);
+(20, '2025_01_14_202241_remove_unique_constraint_from_document_types_name', 9),
+(21, '2025_01_15_142323_add_unique_id_to_documents_table', 10);
 
 -- --------------------------------------------------------
 
@@ -285,7 +288,8 @@ INSERT INTO `subcategories` (`id`, `name`, `department_id`, `created_at`, `updat
 (31, 'Fleet Operation', 6, '2025-01-08 14:52:55', '2025-01-08 14:52:55'),
 (32, 'Fuel Management', 6, '2025-01-08 14:53:17', '2025-01-08 14:53:17'),
 (33, 'Driver Management', 6, '2025-01-08 14:53:34', '2025-01-08 14:53:34'),
-(34, 'General Document', 2, '2025-01-14 16:05:41', '2025-01-14 16:05:41');
+(34, 'General Documents', 2, '2025-01-14 16:05:41', '2025-01-15 08:29:41'),
+(35, 'General Documents', 13, '2025-01-15 08:30:45', '2025-01-15 08:30:45');
 
 -- --------------------------------------------------------
 
@@ -316,7 +320,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `xad_id`, `first_name`, `last_name`, `email`, `nationality`, `organization_unit`, `phone_number`, `password`, `role`, `permissions`, `profile_image`, `created_at`, `updated_at`) VALUES
 (33, NULL, 'xad', 'tech', 'admin@xadtech.com', 'pak', 'admin', '0521077862', '$2y$12$WHWpYX5rpA3oSZYQYx.T6emR.1A.C2XfICThPWxCEvzfSistqapBW', 'Admin', '\"[\\\"Project Management\\\",\\\"Cash Flow Management\\\",\\\"Bank Management\\\",\\\"User Management\\\"]\"', '172499948757.jfif', '2024-08-30 02:31:28', '2024-08-30 02:31:28'),
-(43, 'PT-356', 'sahar', 'sahar', 'secretary@xadtech.com', 'PK', 'Secretary', '123456789', '$2y$10$GmF/rniXKRfoIfp.39.H..Zr9uR9AOxshd0Q2pgwYzBTt1Ubb2GbS', 'Secretary', NULL, '173563596893.jpg', '2024-12-31 05:06:08', '2024-12-31 07:51:40'),
+(43, 'PT-001', 'sahar', 'sahar', 'secretary@xadtech.com', 'PK', 'Secretary', '123456789', '$2y$10$J2ig7lAYuTNLe0mhuldtdOTCt9ie06P8JSKedMz2d3ijNjcg4tLx6', 'Secretary', NULL, '173563596893.jpg', '2024-12-31 05:06:08', '2025-01-15 10:30:40'),
 (44, 'XAD-456', 'nabeel', 'javed', 'nabeel@xadtech.com', 'PK', 'Account Department', '0521077862', '$2y$10$Q6U1N5LDQjyQLUqOzgR/GujP67Gp.p/9TAeozjWDULdWnghVyQ/mq', 'Account Department', NULL, '', '2025-01-04 04:05:58', '2025-01-12 19:47:19');
 
 --
@@ -345,7 +349,8 @@ ALTER TABLE `departments`
 -- Indexes for table `documents`
 --
 ALTER TABLE `documents`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `documents_unique_id_unique` (`unique_id`);
 
 --
 -- Indexes for table `document_types`
@@ -426,13 +431,13 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT for table `documents`
 --
 ALTER TABLE `documents`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `document_types`
 --
 ALTER TABLE `document_types`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -444,7 +449,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -456,7 +461,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `subcategories`
 --
 ALTER TABLE `subcategories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `users`

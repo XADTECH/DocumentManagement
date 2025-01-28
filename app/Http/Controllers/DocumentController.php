@@ -48,8 +48,6 @@ class DocumentController extends Controller
         }
     }
 
-   
-
     // Show the document details
     public function show($id)
     {
@@ -61,30 +59,29 @@ class DocumentController extends Controller
 
     //show the document detail another way
     public function showDetail($id)
-{
-    // Set the page title
-    $title = 'Document Details';
+    {
+        // Set the page title
+        $title = 'Document Details';
 
-    // Fetch the specific document by ID along with its relationships
-    $document = Document::with(['user', 'department'])->find($id);
+        // Fetch the specific document by ID along with its relationships
+        $document = Document::with(['user', 'department'])->find($id);
 
-    if (!$document) {
-        // Handle the case where the document is not found
-        return redirect()->back()->with('error', 'Document not found.');
+        if (!$document) {
+            // Handle the case where the document is not found
+            return redirect()->back()->with('error', 'Document not found.');
+        }
+
+        // Check if the user has permission to view the document
+        $user = auth()->user(); // Assuming you're using Laravel's auth system
+
+        if (!in_array($user->role, ['Admin', 'Secretary', 'CEO']) && $document->uploaded_by !== $user->id) {
+            // Redirect if the user is not authorized to view the document
+            return redirect()->back()->with('error', 'You do not have permission to view this document.');
+        }
+
+        // Pass the document and title to the view
+        return view('content.dashboard.documents-detail', compact('document', 'title'));
     }
-
-    // Check if the user has permission to view the document
-    $user = auth()->user(); // Assuming you're using Laravel's auth system
-
-    if (!in_array($user->role, ['Admin', 'Secretary', 'CEO']) && $document->uploaded_by !== $user->id) {
-        // Redirect if the user is not authorized to view the document
-        return redirect()->back()->with('error', 'You do not have permission to view this document.');
-    }
-
-    // Pass the document and title to the view
-    return view('content.dashboard.documents-detail', compact('document', 'title'));
-}
-
 
     public function updateStatus(Request $request)
     {
@@ -126,23 +123,33 @@ class DocumentController extends Controller
 
     public function destroy($id)
     {
+        
         try {
             // Find the document by ID
             $document = Document::findOrFail($id);
 
             // Decode the file paths stored in the database
-            $filePaths = json_decode($document->file_path);
+            $filePaths = json_decode($document->file_paths);
+            
 
             // Ensure file paths are valid
             if (!empty($filePaths)) {
                 foreach ($filePaths as $filePath) {
-                    // Use public_path or Storage to locate files
-                    $fullPath = public_path($filePath); // Adjust this as needed
+                    // Normalize the file path
+                    $normalizedPath = str_replace(['/', 'public/'], ['\\', ''], $filePath);
+
+
+                    // Construct the full path to the file
+                    $fullPath = public_path() . '\\' . $normalizedPath;
+                    // return response($fullPath);
+
+                    // Check if the file exists before attempting to delete it
                     if (file_exists($fullPath)) {
-                        unlink($fullPath); // Delete file from the filesystem
-                    } else {
-                        // Optional: Log file not found for debugging
-                        \Log::warning("File not found: $fullPath");
+                        if (!unlink($fullPath)) {
+                            return response()->json(['error' => 'Error deleting file.']);
+                        } else {
+                            // return response()->json(['success' => 'File deleted successfully.']);
+                        }                    } else {
                     }
                 }
             }
@@ -154,7 +161,6 @@ class DocumentController extends Controller
             Session::flash('success', 'Document and associated files deleted successfully.');
         } catch (\Exception $e) {
             // Log the error for debugging
-            \Log::error('Error deleting document: ' . $e->getMessage());
 
             // Set an error message
             Session::flash('error', 'An error occurred while deleting the document and files.');
@@ -209,6 +215,9 @@ class DocumentController extends Controller
             'files.*' => 'required|file|max:2048',
         ]);
 
+         // Generate a unique ID for the document
+         $uniqueId = 'DOC' . str_pad(rand(0, 99999), 5, '0', STR_PAD_LEFT);
+
         // Fetch the names using the IDs
         $departmentName = Department::findOrFail($validatedData['department_id'])->name;
         $subcategoryName = Subcategory::findOrFail($validatedData['subcategory_id'])->name;
@@ -236,6 +245,8 @@ class DocumentController extends Controller
         // Save document record in the database
         Document::create([
             'name' => $request->input('name'),
+            'unique_id' => $uniqueId, // Save the generated unique ID
+
             'file_paths' => json_encode($filePaths),
             'department_id' => $validatedData['department_id'],
             'subcategory_id' => $validatedData['subcategory_id'],
@@ -361,9 +372,6 @@ class DocumentController extends Controller
         return view('content.dashboard.dashboard-document-types', compact('subcategory', 'documentTypes'));
     }
 
-   
-
-
     public function showApprovedDocuments()
     {
         $user = Auth::user();
@@ -446,19 +454,18 @@ class DocumentController extends Controller
     public function myDocuments(Request $request)
     {
         $user = auth()->user();
-    
+
         if ($user->hasRole(['Admin', 'CEO', 'Secretary'])) {
             $documents = Document::with(['department', 'subcategory', 'documentType'])->get();
         } else {
-            $documents = Document::with(['user','department', 'subcategory', 'documentType'])
+            $documents = Document::with(['user', 'department', 'subcategory', 'documentType'])
                 ->where('uploaded_by', $user->id)
                 ->get();
         }
-    
+
         // return response()->json($documents); // comment this out
         return view('content.documents.myDocuments', compact('documents'));
     }
-    
 
     public function documentPending()
     {

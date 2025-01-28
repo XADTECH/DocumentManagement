@@ -157,8 +157,15 @@
                 <tr>
                     <th>Status</th>
                     <td>
-                        <span class="badge bg-success">{{ $document->approval_status }}</span>
+                        @if ($document->approval_status === 'Approved')
+                            <span class="badge bg-success text-white">{{ $document->approval_status }}</span>
+                        @elseif ($document->approval_status === 'Pending')
+                            <span class="badge bg-warning text-white">{{ $document->approval_status }}</span>
+                        @elseif ($document->approval_status === 'Rejected')
+                            <span class="badge bg-danger text-white">{{ $document->approval_status }}</span>
+                        @endif
                     </td>
+                    
                 </tr>
                 <tr>
                     <th>Remarks</th>
