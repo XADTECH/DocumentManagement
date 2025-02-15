@@ -13,7 +13,9 @@ use App\Models\DocumentType;
 use Illuminate\Support\Facades\File; // Ensure this is imported
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
-
+use App\Mail\DocumentUploaded;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserUploaded;
 class DocumentController extends Controller
 {
     public function index()
@@ -94,6 +96,14 @@ class DocumentController extends Controller
 
         // Retrieve the document using the provided document ID
         $document = Document::findOrFail($request->input('document_id'));
+        //when document is rejected also unlink the file from the server
+        // if ($request->input('status') === 'Rejected') {
+        //     $filePaths = json_decode($document->file_paths);
+        //     foreach ($filePaths as $filePath) {
+        //         unlink(public_path($filePath));
+        //     }
+        // }
+
 
         // Update the document fields based on the status
         switch ($request->input('status')) {
@@ -110,6 +120,19 @@ class DocumentController extends Controller
                 $document->ceo_approval = 0;
                 break;
         }
+        //send email to the user when the document is rejected or approved
+        if ($request->input('status') === 'Rejected') {
+            $user = User::find($document->uploaded_by);
+            $documentUrl = route('documents.show', $document->id);
+            //send status as rejected
+            Mail::to($user->email)->send(new UserUploaded($document, 'user', $documentUrl, 'Rejected'));
+        } else {
+            $user = User::find($document->uploaded_by);
+            $documentUrl = route('documents.show', $document->id);
+            //send status as approved
+            Mail::to($user->email)->send(new UserUploaded($document, 'user', $documentUrl, 'Approved'));
+        }
+
 
         // Update remarks field
         $document->remarks = $request->input('remarks');
@@ -243,10 +266,9 @@ class DocumentController extends Controller
         $finalFileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $file->getClientOriginalExtension();
 
         // Save document record in the database
-        Document::create([
+        $document = Document::create([
             'name' => $request->input('name'),
             'unique_id' => $uniqueId, // Save the generated unique ID
-
             'file_paths' => json_encode($filePaths),
             'department_id' => $validatedData['department_id'],
             'subcategory_id' => $validatedData['subcategory_id'],
@@ -255,6 +277,19 @@ class DocumentController extends Controller
             'ceo_approval' => $request->has('ceo_approval') ? 1 : 0,
             'approval_status' => 'Pending', // Default approval status
         ]);
+
+        // Send email notification to the user
+        $user = User::find(auth()->id());
+
+        // Generate the document URL
+        $documentUrl = route('documents.show', $document->id); // Ensure this route exists
+
+        // send email to the user
+        Mail::to($user->email)->send(new UserUploaded($document, 'user', $documentUrl, 'Pending'));
+
+        // send email to admin where role is admin
+        $admin = User::where('role', 'Admin')->first();
+        Mail::to($admin->email)->send(new DocumentUploaded($document, 'admin', $documentUrl));
 
         return redirect()->back()->with('success', 'Document uploaded successfully.');
     }
